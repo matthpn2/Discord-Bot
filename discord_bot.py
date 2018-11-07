@@ -34,7 +34,7 @@ async def user_metrics_background():
 
     # create a reference to your Discord server-guild
     global brb_guild
-    brb_guild = client.get_guild(509825827412770836)
+    brb_guild = client.get_guild("client_id")
 
     while not client.is_closed():
         try:
@@ -94,7 +94,7 @@ async def on_message(message):
         await message.channel.send("user_status.png", file = graph_file)
 
 client.loop.create_task(user_metrics_background())
-client.run("NTA5ODI2Mzc0NjM5NDE5NDI2.DsTdDQ.YmqD2uZOADYZnJc_t-n0-Mf2jng")
+client.run("bot_token")
 
 # For more information, proceed to the Discord API Documentation at https://discordpy.readthedocs.io/en/rewrite/api.html .
 #                                      Discord Developer Portal at https://discordapp.com/developers/applications/ .
