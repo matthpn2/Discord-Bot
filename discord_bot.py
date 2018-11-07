@@ -1,9 +1,13 @@
 import discord
 import time
 import asyncio
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
+
+import wolframalpha_api, openweather_api, mapquest_api
+import wikipedia
 
 style.use("fivethirtyeight")
 client = discord.Client()
@@ -25,6 +29,19 @@ def community_report(guild):
             offline += 1
     
     return online, idle, offline
+
+def removeKeyWord(message, keyword):
+    '''
+        This method edits input text. For example, if you send the message "wolfram calories in bread" or "calories in
+        bread wolfram", the progrma will recognize "wolfram" and call this function to change the text to "calroies in
+        brea" which will then be sent to wolfram. 
+    '''
+    if str(message).endswith(keyword):
+        message = message[:-len(keyword)].strip()
+    elif str(message).startswith(keyword):
+        message = message[len(keyword):].strip()
+        
+    return str(message)
 
 async def user_metrics_background():
     '''
@@ -86,12 +103,44 @@ async def on_message(message):
     elif "bunrieubot.member_count()" == message.content:
         await message.channel.send(f"```py\n{brb_guild.member_count}```")
 
-    elif "bunrieu.community_report()" == message.content:
+    elif "bunrieubot.community_report()" == message.content:
         online, idle, offline = community_report(brb_guild)
         await message.channel.send(f"```py\nOnline: {online} \nIdle: {idle} \nOffline: {offline}```")
         
         graph_file = discord.File("user_status.png", filename = "user_status.png")
         await message.channel.send("user_status.png", file = graph_file)
+
+    elif "bunrieubot.wiki()" in message.content:
+        edit_message = removeKeyWord(message.content, "bunrieubot.wiki()")
+        print(edit_message)
+        try:
+            await message.channel.send(wikipedia.summary(edit_message)[0:1500] + "...")
+        except:
+            await message.channel.send("Request was NOT found using Wikipedia. Please be more specific.")
+
+    elif "bunrieubot.weather()" in message.content:
+        edit_message = removeKeyWord(message.content, "bunrieubot.weather()")
+        try:
+            data = openweather_api.fetchWeatherData(edit_message)
+            await message.channel.send(openweather_api.outputWeatherData(data))
+        except:
+            await message.channel.send("There was an Open Weather Map Error. Please try again.")
+
+    elif "bunrieubot.wolfram()" in message.content:
+        edit_message = removeKeyWord(message.content, "bunrieubot.wolfram()")
+        try:
+            data = wolframalpha_api.fetchWolframData(edit_message)
+            await message.channel.send(wolframalpha_api.outputWolframData(data))
+        except:
+            await message.channel.send("Request was NOT found using Wolfram Alpha. Please be more specific.")
+
+    elif "bunrieubot.mapquest()" in message.content:
+        edit_message = removeKeyWord(message.content, "bunrieubot.mapquest()")
+        try:
+            data = mapquest_api.fetchMapData(edit_message)
+            await message.channel.send(mapquest_api.outputMapData(data))
+        except:
+            await message.channel.send("There was a MapQuest Error. Please try again.")
 
 client.loop.create_task(user_metrics_background())
 client.run("bot_token")
