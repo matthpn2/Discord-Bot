@@ -1,12 +1,12 @@
+from matplotlib import style
+import matplotlib.pyplot as plt
 import discord
 import time
 import asyncio
-
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib import style
-
-import wolframalpha_api, openweather_api, mapquest_api
+import wolframalpha_api
+import openweather_api
+import mapquest_api
 import wikipedia
 
 style.use("fivethirtyeight")
@@ -21,13 +21,9 @@ def community_report(guild):
     offline = 0
 
     for gm in guild.members:
-        if str(gm.status) == "online":
-            online += 1
-        elif str(gm.status) == "idle":
-            idle += 1 
-        else:
-            offline += 1
-    
+        if str(gm.status) == "online": online += 1
+        elif str(gm.status) == "idle": idle += 1 
+        else: offline += 1
     return online, idle, offline
 
 def removeKeyWord(message, keyword):
@@ -40,7 +36,6 @@ def removeKeyWord(message, keyword):
         message = message[:-len(keyword)].strip()
     elif str(message).startswith(keyword):
         message = message[len(keyword):].strip()
-        
     return str(message)
 
 async def user_metrics_background():
@@ -74,7 +69,6 @@ async def user_metrics_background():
             plt.savefig("user_status.png")
 
             await asyncio.sleep(30)
-
         except Exception as e:
             print(str(e))
             await asyncio.sleep(30)
@@ -96,20 +90,16 @@ async def on_message(message):
 
     if "bunrieubot.logout()" == message.content:
         await client.close()
-    
     elif "Hello BRB" == message.content:
         await message.channel.send(f"Good day to you {message.author.name}")
-
     elif "bunrieubot.member_count()" == message.content:
         await message.channel.send(f"```py\n{brb_guild.member_count}```")
-
     elif "bunrieubot.community_report()" == message.content:
         online, idle, offline = community_report(brb_guild)
         await message.channel.send(f"```py\nOnline: {online} \nIdle: {idle} \nOffline: {offline}```")
         
-        graph_file = discord.File("user_status.png", filename = "user_status.png")
-        await message.channel.send("user_status.png", file = graph_file)
-
+        graph_file = discord.File("user_status.png", filename="user_status.png")
+        await message.channel.send("user_status.png", file=graph_file)
     elif "bunrieubot.wiki()" in message.content:
         edit_message = removeKeyWord(message.content, "bunrieubot.wiki()")
         print(edit_message)
@@ -117,7 +107,6 @@ async def on_message(message):
             await message.channel.send(wikipedia.summary(edit_message)[0:1500] + "...")
         except:
             await message.channel.send("Request was NOT found using Wikipedia. Please be more specific.")
-
     elif "bunrieubot.weather()" in message.content:
         edit_message = removeKeyWord(message.content, "bunrieubot.weather()")
         try:
@@ -125,7 +114,6 @@ async def on_message(message):
             await message.channel.send(openweather_api.outputWeatherData(data))
         except:
             await message.channel.send("There was an Open Weather Map Error. Please try again.")
-
     elif "bunrieubot.wolfram()" in message.content:
         edit_message = removeKeyWord(message.content, "bunrieubot.wolfram()")
         try:
@@ -133,7 +121,6 @@ async def on_message(message):
             await message.channel.send(wolframalpha_api.outputWolframData(data))
         except:
             await message.channel.send("Request was NOT found using Wolfram Alpha. Please be more specific.")
-
     elif "bunrieubot.mapquest()" in message.content:
         edit_message = removeKeyWord(message.content, "bunrieubot.mapquest()")
         try:

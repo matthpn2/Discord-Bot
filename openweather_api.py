@@ -13,9 +13,8 @@ def fetchWeatherData(cityname):
     build_weather_url = base_weather_url + str(cityname) + '&mode=json&units=imperial&appid=' + weather_api_key
 
     response = urllib.request.urlopen(build_weather_url)
-    json_text = response.read().decode(encoding = 'utf-8')
+    json_text = response.read().decode(encoding='utf-8')
     response.close()
-
     return json.loads(json_text)
 
 def convertTime(time):
@@ -61,5 +60,4 @@ def outputWeatherData(data):
                'Sunrise at {}'.format(sunrise) + '\n' +
                'Sunset at {}'.format(sunset) + '\n\n' +
                'Last update from server at {}'.format(latest_time) )
-               
     return answer

@@ -17,7 +17,7 @@ def fetchMapData(instructions):
     build_mapquest_url = base_mapquest_url + '/directions/v2/route?' + urllib.parse.urlencode(query_parameters)
 
     response = urllib.request.urlopen(build_mapquest_url)
-    json_text = response.read().decode(encoding = 'utf-8')
+    json_text = response.read().decode(encoding='utf-8')
     response.close()
 
     return json.loads(json_text)
@@ -52,5 +52,4 @@ def outputMapData(data):
         lat_long += str("{0:.2f}".format(abs(lat))) + latitude + str("{0:.2f}".format(abs(long))) + longitude + '\n'
 
     answer = steps + '\n' + total_distance + '\n\n' + total_time + '\n\n' + lat_long
-
     return answer
